@@ -15,7 +15,7 @@ const mongoDBConnect = async () => {
         process.env.MONGO_ATLAS_PW +
         "@cluster0.tbtvzsb.mongodb.net/?retryWrites=true&w=majority"
     );
-    console.log("Connected to DB")
+    console.log("Connected to DB");
   } catch (error) {
     console.log(error);
     throw error;
@@ -31,14 +31,22 @@ app.use("/users", usersRoute);
 app.use("/hotels", hotelsRoute);
 app.use("/rooms", roomsRoute);
 
+app.use((err, req, res, next) => {
+  const errorStatus = err.status || 500;
+  const errorMessage = err.message || "Something went wrong!";
+  return res.status(errorStatus).json({
+    message: errorMessage,
+    status: errorStatus,
+  })
+  // return res.status(500).json("Hello from errorHandler middleware")
+});
+
 mongoose.connection.on("disconnected", () => {
-    console.log("DB disconnected");
-})
-
-
+  console.log("DB disconnected");
+});
 
 app.listen(3000, () => {
-    mongoDBConnect();
+  mongoDBConnect();
   console.log("Connected to backend");
 });
 // D:\BookingApp\api\routes\auth.js

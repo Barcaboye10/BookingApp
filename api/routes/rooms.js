@@ -1,8 +1,12 @@
-import express from 'express';
+import express from "express";
+import { verifyAdmin } from "../../utils/verifyToken.js";
+import { createRoom, deleteRoom } from "../controllers/room.js";
 const router = express.Router();
 
-router.get("/", (req, res, next) => {
-    res.send("Hello from Rooms")
-})
+// CREATE
+router.post("/:hotelId", verifyAdmin, createRoom);
+
+// DELETE
+router.delete("/:roomId/:hotelId", verifyAdmin, deleteRoom);
 
 export default router;

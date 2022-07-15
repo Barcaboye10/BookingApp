@@ -41,7 +41,8 @@ const hotelSchema = mongoose.Schema({
         max: 5
     },
     rooms: {
-        type:[String]
+        type:[String],
+        ref: "Room"
     },
     cheapestPrice: {
         type: Number,

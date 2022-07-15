@@ -1,6 +1,7 @@
 import User from "../models/User.js";
 import { createError } from "../../utils/error.js";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 export const registerUser = async (req, res, next) => {
   try {
@@ -32,8 +33,19 @@ export const loginUser = async (req, res, next) => {
       return next(createError(400, "Wrong Credentials"));
     }
 
-    const { password, isAdmin, __v, ...otherDetails} = user._doc;
-    res.status(200).json({...otherDetails});
+    const token = jwt.sign(
+      { id: user._id, isAdmin: user.isAdmin },
+      process.env.JWT_SECRET_KEY
+    );
+
+    const { password, isAdmin, __v, ...otherDetails } = user._doc;
+    res
+      .cookie("access_token", token, {
+        httpOnly: true,
+        // An HttpOnly Cookie is a tag added to a browser cookie that prevents client-side scripts from accessing data. It provides a gate that prevents the specialized cookie from being accessed by anything other than the server
+      })
+      .status(200)
+      .json({ ...otherDetails });
   } catch (error) {
     next(error);
   }
